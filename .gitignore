@@ -1,0 +1,49 @@
+## Archivos de Visual Studio
+.vs/
+*.user
+*.suo
+
+## Archivos de compilación
+bin/
+obj/
+
+## Paquetes NuGet
+*.nupkg
+packages/
+*.snupkg
+project.lock.json
+project.assets.json
+
+## Archivos generados
+*.dll
+*.exe
+*.log
+*.pdb
+*.cache
+*.dbmdl
+
+## Archivos de configuración local
+appsettings.Development.json
+secrets.json
+
+## Archivos de publicación
+publish/
+out/
+
+## Archivos de sistema operativo
+.DS_Store
+Thumbs.db
+
+## Archivos de Rider (si usas JetBrains)
+.idea/
+*.sln.iml
+
+## Archivos de configuración de usuario
+*.userosscache
+*.sln.docstates
+
+## Logs
+*.log
+
+## Archivos de migraciones temporales (Entity Framework)
+Migrations/*Designer.cs
