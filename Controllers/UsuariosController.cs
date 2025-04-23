@@ -12,7 +12,6 @@ using Microsoft.IdentityModel.Tokens;
 namespace biblotecaApi.Controllers;
 [ApiController]
 [Route("api/Usuarios")]
-[Authorize]
 public class UsuariosController : ControllerBase
 {
     private ApplicationDbContext _contex;

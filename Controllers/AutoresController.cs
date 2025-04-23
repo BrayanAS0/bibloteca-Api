@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace biblotecaApi.Controllers;
 [ApiController]
 [Route("api/autores")]
-[Authorize]
 
 public class AutoresController : ControllerBase
 {

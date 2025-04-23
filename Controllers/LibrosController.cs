@@ -110,5 +110,15 @@ private void AsignarOrdenAutores(Libro libro){
         return _mapper.Map<LibroConAutor>(libro);
     }
 
+    [HttpPost("imagen")]
+    public ActionResult Imagen( IFormFile imagen)
+    {
+        if (imagen == null)
+            return BadRequest("No se recibió ninguna imagen.");
+
+        return Ok("Imagen recibida");
+    }
+
+
 
 }
