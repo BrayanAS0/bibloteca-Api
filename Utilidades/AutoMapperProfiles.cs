@@ -1,7 +1,8 @@
-using System.IO.Compression;
 using AutoMapper;
 using biblotecaApi.DTOS;
 using biblotecaApi.Entidades;
+using Microsoft.AspNetCore.Identity;
+using System.IO.Compression;
 
 namespace biblotecaApi.Utiliades;
 
@@ -20,7 +21,7 @@ ForMember(dto =>
 
 
 
-        CreateMap<AutorCreactionDto, Autor>();
+        CreateMap<AutorCreactionDto, Autor>().ReverseMap();
 
 
         CreateMap<Libro, LibroDto>();
@@ -46,7 +47,10 @@ config => config.MapFrom(dto =>
 
         CreateMap<ComentarioCreacionDto,Comentario>();
         CreateMap<Comentario,ComentarioDto>();
+        CreateMap<CredencialesDTO, IdentityUser>()
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email)).ReverseMap();
 
-}
+    }
 }
 

@@ -25,23 +25,23 @@ builder.Services.AddDbContext<ApplicationDbContext>(opciones =>
 
 // 🔐 Identity
 builder.Services.AddIdentityCore<IdentityUser>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()//para que las tablas de sql puedan cominacarse con indetity
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<SignInManager<IdentityUser>>();
+builder.Services.AddScoped<SignInManager<IdentityUser>>();//permite autenticar usuarios
 builder.Services.AddScoped<UserManager<IdentityUser>>();
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpContextAccessor();//permite acceder al contexto en cuaquier clase
 
 // 🔑 JWT
 builder.Services.AddAuthentication().AddJwtBearer(opciones =>
 {
-    opciones.MapInboundClaims = false;
+    opciones.MapInboundClaims = false;// no me cambie el valor del claim automatico 
     opciones.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = false,
         ValidateAudience = false,
         ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
+        ValidateIssuerSigningKey = true,//de lo mas importante
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(claveJwt)),
         ClockSkew = TimeSpan.Zero
     };

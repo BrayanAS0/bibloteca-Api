@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
+using AutoMapper;
 using biblotecaApi.Datos;
 using biblotecaApi.DTOS;
 using Microsoft.AspNetCore.Authorization;
@@ -18,30 +19,33 @@ public class UsuariosController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly SignInManager<IdentityUser> _signInManager;
-
+    private readonly IMapper _mapper;
     public UsuariosController(ApplicationDbContext context,
      UserManager<IdentityUser> userManager,
       IConfiguration configuration,
-      SignInManager<IdentityUser> signInManager
+      SignInManager<IdentityUser> signInManager,
+      IMapper mapper
       )
     {
         _contex = context;
         _configuration = configuration;
         _userManager = userManager;
             _signInManager = signInManager;
-
+_mapper = mapper;
     }
     [HttpPost("registro")]
     [AllowAnonymous]
     [Description("you need access to use it")]
     public async Task<ActionResult<RespuestaAutenticacionDTO>> Registrar(CredencialesDTO credencialesUsuariosDTO)
     {
-        var usuario = new IdentityUser
-        {
-            UserName = credencialesUsuariosDTO.Email,
-            Email = credencialesUsuariosDTO.Email
+        //var usuario = new IdentityUser
+        //{
+        //    UserName = credencialesUsuariosDTO.Email,
+        //    Email = credencialesUsuariosDTO.Email
 
-        };
+        //};
+
+        var usuario = _mapper.Map<IdentityUser>(credencialesUsuariosDTO);
         var resultado = await _userManager.CreateAsync(usuario, credencialesUsuariosDTO.Password!);
         if (resultado.Succeeded)
         {
