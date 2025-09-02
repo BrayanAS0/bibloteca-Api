@@ -280,9 +280,15 @@ namespace bibloteca_api.Migrations
                     b.Property<int>("LibroId")
                         .HasColumnType("int");
 
+                    b.Property<string>("UsuarioId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("LibroId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Comentarios");
                 });
@@ -382,13 +388,21 @@ namespace bibloteca_api.Migrations
 
             modelBuilder.Entity("biblotecaApi.Entidades.Comentario", b =>
                 {
-                    b.HasOne("biblotecaApi.Entidades.Libro", "Libros")
+                    b.HasOne("biblotecaApi.Entidades.Libro", "Libro")
                         .WithMany("Comentarios")
                         .HasForeignKey("LibroId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Libros");
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Libro");
+
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("biblotecaApi.Entidades.Libro", b =>
