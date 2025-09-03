@@ -7,6 +7,5 @@ public class ComentarioCreacionDto{
 
     [Required]
     public required string Cuerpo {set;get;}
-public Guid Id = new Guid();
 
 }

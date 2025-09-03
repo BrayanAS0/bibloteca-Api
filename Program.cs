@@ -1,4 +1,5 @@
 using System.Text;
+using bibloteca_api.Servicios;
 using biblotecaApi.Datos;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,10 @@ builder.Services.AddIdentityCore<IdentityUser>()
 
 builder.Services.AddScoped<SignInManager<IdentityUser>>();//permite autenticar usuarios
 builder.Services.AddScoped<UserManager<IdentityUser>>();
+builder.Services.AddTransient<IServiciosUsuarios, ServiciosUsuarios>();
+
+
+
 builder.Services.AddHttpContextAccessor();//permite acceder al contexto en cuaquier clase
 
 // 🔑 JWT

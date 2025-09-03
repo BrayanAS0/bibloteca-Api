@@ -7,4 +7,7 @@ public class ComentarioDto{
     [Required]
     public required string Cuerpo {set;get;}
     public DateTime FechaDePublicacion {get;set;}
+    public required string UsuarioId {get;set;}
+    public required string UsuarioEmail { get; set; }
+
 }

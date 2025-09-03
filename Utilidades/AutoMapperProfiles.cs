@@ -37,7 +37,7 @@ config => config.MapFrom(dto =>
 
 
 
-
+         
         // CreateMap<Libro, LibroConAutor>()
         //      .ForMember(dest => dest.AutorNombre,// aque propieda de destino le quiero asignar un valor
         //       opt => opt.MapFrom(src => $" {src.Autor!.Nombres} {src.Autor!.Apellidos}"));// cual propiedad de Libro quires asignar
@@ -46,7 +46,7 @@ config => config.MapFrom(dto =>
         CreateMap<Comentario, ComentarioDto>();
 
         CreateMap<ComentarioCreacionDto,Comentario>();
-        CreateMap<Comentario,ComentarioDto>();
+        CreateMap<Comentario,ComentarioDto>().ForMember(dest=> dest.UsuarioEmail ,config=> config.MapFrom(ent => ent.Usuario!.Email));
         CreateMap<CredencialesDTO, IdentityUser>()
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email)).ReverseMap();
