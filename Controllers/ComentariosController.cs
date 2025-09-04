@@ -1,8 +1,11 @@
 using AutoMapper;
+using Azure;
+using bibloteca_api.DTOs;
 using bibloteca_api.Servicios;
 using biblotecaApi.Datos;
 using biblotecaApi.DTOS;
 using biblotecaApi.Entidades;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,7 +50,7 @@ var existeLibro =await  _context.Libros.AnyAsync(X=> X.id == libroId);
    {
         var existeLibro = await _context.Libros.AnyAsync(x=> x.id == libroId);
         if (!existeLibro) return NotFound();
-        var usuario = _serviciosUsuarios.ObetenerUsuario();
+        var usuario =  await _serviciosUsuarios.ObetenerUsuario();
         if(usuario == null)return NotFound();
 
         var comentario = _mapper.Map<Comentario>(cometarioCreacion);
@@ -60,10 +63,72 @@ var existeLibro =await  _context.Libros.AnyAsync(X=> X.id == libroId);
         var cometarioDto = _mapper.Map<ComentarioDto>(comentario);
         return CreatedAtRoute("ObtenerComnetario", new {id=comentario.Id,libroId=libroId});
 
-
-
-
    }
 
+    [HttpPatch("{id:int}")]
+    public async Task<ActionResult> Pathc(Guid id, int libroId, JsonPatchDocument<ComentarioPatchDTO> pathcDoc)
+    {
+        if (pathcDoc is null) return BadRequest();
+        var existenteLibro = await _context.Libros.AnyAsync(x => x.id == libroId);
+        if (!existenteLibro) return BadRequest();
 
+
+        var usuario = await _serviciosUsuarios.ObetenerUsuario();
+        if (usuario == null) return NotFound();
+
+
+        var comentarioDb = await _context.Comentarios.FirstOrDefaultAsync(x => x.Id == id);
+        if (comentarioDb is null) return NotFound();
+
+        if (comentarioDb.UsuarioId != usuario.Id) return Forbid();
+
+        var comentarioPathcDto = _mapper.Map<ComentarioPatchDTO>(comentarioDb);
+
+        pathcDoc.ApplyTo(comentarioPathcDto,ModelState);
+        var esValido = TryValidateModel(comentarioPathcDto);
+        if (!esValido)
+        {
+            return ValidationProblem();
+        }
+
+        _mapper.Map(comentarioPathcDto, comentarioDb);
+
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> Delete(Guid id, int libroId)
+    {
+        var existeLibro = await _context.Libros.AnyAsync(x => x.id == libroId);
+
+        if (!existeLibro)
+        {
+            return NotFound();
+        }
+
+        var usuario = await _serviciosUsuarios.ObetenerUsuario();
+
+        if (usuario is null)
+        {
+            return NotFound();
+        }
+
+        var comentarioDB = await _context.Comentarios.FirstOrDefaultAsync(x => x.Id == id);
+
+        if (comentarioDB is null)
+        {
+            return NotFound();
+        }
+
+        if (comentarioDB.UsuarioId != usuario.Id)
+        {
+            return Forbid();
+        }
+
+        _context.Remove(comentarioDB);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

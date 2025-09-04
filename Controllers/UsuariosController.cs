@@ -94,12 +94,33 @@ if(resultado.Succeeded){
             new Claim("lo que yo quiera ","cualquie valor")
         };
         var usuario = await _userManager.FindByEmailAsync(credencialesDTO.Email);
+
+
         var claimsDB = await _userManager.GetClaimsAsync(usuario!);
         claims.AddRange(claimsDB);
+
+
+        // Agrega los roles del usuario como claims
+        var roles = await _userManager.GetRolesAsync(usuario!);
+        foreach (var rol in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, rol)); // ClaimTypes.Role es el estándar
+        }
+
+
+
+
+
         var llave = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["llavejwt"]!));
         var credenciales = new SigningCredentials(llave, SecurityAlgorithms.HmacSha256);
         var expiracion = DateTime.UtcNow.AddYears(1);
-        var tokenSeguridad = new JwtSecurityToken(issuer: null, audience: null, claims, expires: expiracion, signingCredentials: credenciales);
+        var tokenSeguridad = new JwtSecurityToken(
+            issuer: null,
+            audience: null,
+            claims,
+            expires: expiracion,
+            signingCredentials: credenciales
+            );
         var token = new JwtSecurityTokenHandler().WriteToken(tokenSeguridad);
         return new RespuestaAutenticacionDTO
         {
