@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using AutoMapper;
+using bibloteca_api.Servicios;
 using biblotecaApi.Datos;
 using biblotecaApi.DTOS;
 using Microsoft.AspNetCore.Authorization;
@@ -20,13 +21,16 @@ public class UsuariosController : ControllerBase
     private readonly UserManager<IdentityUser> _userManager;
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly IMapper _mapper;
+    private readonly IServiciosUsuarios _serviciosUsuarios;
     public UsuariosController(ApplicationDbContext context,
      UserManager<IdentityUser> userManager,
       IConfiguration configuration,
       SignInManager<IdentityUser> signInManager,
-      IMapper mapper
+      IMapper mapper,
+      IServiciosUsuarios serviciosUsuarios
       )
     {
+        _serviciosUsuarios = serviciosUsuarios;
         _contex = context;
         _configuration = configuration;
         _userManager = userManager;
@@ -128,4 +132,19 @@ if(resultado.Succeeded){
             Expiracion = expiracion
         };
     }
+
+    [HttpGet("renovar-token")]
+    [Authorize]
+    public async Task<ActionResult<RespuestaAutenticacionDTO>> RenovarToken()
+    {
+        var usuario = await _serviciosUsuarios.ObetenerUsuario();
+        if (usuario == null) return NotFound();
+
+        var credencialesUsuarioDto = new CredencialesDTO { Email = usuario.Email! };
+        var respuestaAutencticacion = await contruirToken(credencialesUsuarioDto);
+
+        return respuestaAutencticacion;
+
+    }
+
 }
