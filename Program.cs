@@ -26,6 +26,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(opciones =>
 
 // 🔐 Identity
 builder.Services.AddIdentityCore<IdentityUser>()
+    .AddRoles<IdentityRole>()//permite usar lo de roles
     .AddEntityFrameworkStores<ApplicationDbContext>()//para que las tablas de sql puedan cominacarse con indetity
     .AddDefaultTokenProviders();
 
