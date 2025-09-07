@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace bibloteca_api.Servicios
 {
@@ -19,6 +20,11 @@ namespace bibloteca_api.Servicios
 
             return await _userManager.FindByEmailAsync(email);
 
+        }
+        public async Task<List<IdentityUser>> ObtenerUsuarios()
+        {
+            var usuarios =await  _userManager.Users.ToListAsync();
+            return usuarios;
         }
 
     }

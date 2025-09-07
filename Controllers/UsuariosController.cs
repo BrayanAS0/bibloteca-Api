@@ -38,7 +38,6 @@ public class UsuariosController : ControllerBase
 _mapper = mapper;
     }
     [HttpPost("registro")]
-    [AllowAnonymous]
     [Description("you need access to use it")]
     public async Task<ActionResult<RespuestaAutenticacionDTO>> Registrar(CredencialesDTO credencialesUsuariosDTO)
     {
@@ -66,7 +65,6 @@ _mapper = mapper;
         }
     }
     [HttpPost("login")]
-    [AllowAnonymous]
     public async Task<ActionResult<RespuestaAutenticacionDTO>> Login(CredencialesDTO credencialesDTO)
     {
         var usuario = await _userManager.FindByEmailAsync(credencialesDTO.Email);
@@ -146,5 +144,11 @@ if(resultado.Succeeded){
         return respuestaAutencticacion;
 
     }
+
+    [HttpGet("Obtener_Usuarios")]
+    public async Task<ActionResult> ObtenerUsuarios() {
+        var usuarios = await _serviciosUsuarios.ObtenerUsuarios();
+        return Ok(usuarios);
+    } 
 
 }
