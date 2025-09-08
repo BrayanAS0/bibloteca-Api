@@ -1,4 +1,6 @@
 using AutoMapper;
+using bibloteca_api.DTOs;
+using bibloteca_api.Entidades;
 using biblotecaApi.DTOS;
 using biblotecaApi.Entidades;
 using Microsoft.AspNetCore.Identity;
@@ -47,10 +49,17 @@ config => config.MapFrom(dto =>
 
         CreateMap<ComentarioCreacionDto,Comentario>();
         CreateMap<Comentario,ComentarioDto>().ForMember(dest=> dest.UsuarioEmail ,config=> config.MapFrom(ent => ent.Usuario!.Email));
-        CreateMap<CredencialesDTO, IdentityUser>()
+        CreateMap<CredencialesDTO, bibloteca_api.Entidades.Usuario>()
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email)).ReverseMap();
 
+
+
+
+        ///////////////////////
+        ///
+
+        CreateMap<UsuarioDto, Usuario>().ReverseMap();
     }
 }
 

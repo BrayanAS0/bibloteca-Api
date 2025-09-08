@@ -11,7 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 namespace biblotecaApi.Controllers;
 [ApiController]
 [Route("api/autores")]
-[Authorize]
+[Authorize(Policy ="esadmin")]
+
 public class AutoresController : ControllerBase
 {
     private readonly ApplicationDbContext context;
@@ -24,6 +25,7 @@ public class AutoresController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IEnumerable<AutorDto>> get()
     {
        var autores =await context.Autores.Include(x => x.Libros).ToListAsync();

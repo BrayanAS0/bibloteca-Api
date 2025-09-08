@@ -3,10 +3,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using AutoMapper;
+using bibloteca_api.DTOs;
+using bibloteca_api.Entidades;
 using bibloteca_api.Servicios;
 using biblotecaApi.Datos;
 using biblotecaApi.DTOS;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -14,18 +17,19 @@ using Microsoft.IdentityModel.Tokens;
 namespace biblotecaApi.Controllers;
 [ApiController]
 [Route("api/Usuarios")]
+
 public class UsuariosController : ControllerBase
 {
     private ApplicationDbContext _contex;
     private readonly IConfiguration _configuration;
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<Usuario> _userManager;
+    private readonly SignInManager<Usuario> _signInManager;
     private readonly IMapper _mapper;
     private readonly IServiciosUsuarios _serviciosUsuarios;
     public UsuariosController(ApplicationDbContext context,
-     UserManager<IdentityUser> userManager,
+     UserManager<Usuario> userManager,
       IConfiguration configuration,
-      SignInManager<IdentityUser> signInManager,
+      SignInManager<Usuario> signInManager,
       IMapper mapper,
       IServiciosUsuarios serviciosUsuarios
       )
@@ -48,7 +52,7 @@ _mapper = mapper;
 
         //};
 
-        var usuario = _mapper.Map<IdentityUser>(credencialesUsuariosDTO);
+        var usuario = _mapper.Map<Usuario>(credencialesUsuariosDTO);
         var resultado = await _userManager.CreateAsync(usuario, credencialesUsuariosDTO.Password!);
         if (resultado.Succeeded)
         {
@@ -145,10 +149,43 @@ if(resultado.Succeeded){
 
     }
 
+    [HttpPost("Hacer-admin")]
+    public async Task<ActionResult> HacerAdmin( EditarClaimDto editarClaimDto)
+    {
+        var usuario = await _userManager.FindByEmailAsync(editarClaimDto.Email);
+        if(usuario == null) return NotFound();
+
+        await _userManager.AddClaimAsync(usuario, new Claim("esadmin", "true"));
+        return Ok();
+
+    }
+    [HttpPost("Remover-admin")]
+    public async Task<ActionResult> HzzAdmin(EditarClaimDto editarClaimDto)
+    {
+        var usuario = await _userManager.FindByEmailAsync(editarClaimDto.Email);
+        if (usuario == null) return NotFound();
+
+        await _userManager.AddClaimAsync(usuario, new Claim("esadmin", "true"));
+        return Ok();
+
+    }
+
     [HttpGet("Obtener_Usuarios")]
     public async Task<ActionResult> ObtenerUsuarios() {
         var usuarios = await _serviciosUsuarios.ObtenerUsuarios();
-        return Ok(usuarios);
-    } 
+        var usuarioDto = _mapper.Map<List<UsuarioDto>>(usuarios);
+        return Ok(usuarioDto);
+    }
+
+    [HttpPut]
+    [Authorize]
+    public async Task<ActionResult> ActulizarUsuario(ActulizarUsuarioDto actulizarUsuarioDto)
+    {
+        var usuario =  await _serviciosUsuarios.ObetenerUsuario();
+        if (usuario == null) return NotFound();
+        usuario.FechaNacimiento=actulizarUsuarioDto.FechaNacimiento;
+        await _userManager.UpdateAsync(usuario);
+        return NoContent();
+    }
 
 }

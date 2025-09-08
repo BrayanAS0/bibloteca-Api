@@ -1,9 +1,10 @@
-using System.Text;
+using bibloteca_api.Entidades;
 using bibloteca_api.Servicios;
 using biblotecaApi.Datos;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,13 +26,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(opciones =>
     opciones.UseSqlServer(connectionString));
 
 // 🔐 Identity
-builder.Services.AddIdentityCore<IdentityUser>()
+builder.Services.AddIdentityCore<Usuario>()
     .AddRoles<IdentityRole>()//permite usar lo de roles
     .AddEntityFrameworkStores<ApplicationDbContext>()//para que las tablas de sql puedan cominacarse con indetity
     .AddDefaultTokenProviders();
 
-builder.Services.AddScoped<SignInManager<IdentityUser>>();//permite autenticar usuarios
-builder.Services.AddScoped<UserManager<IdentityUser>>();
+builder.Services.AddScoped<SignInManager<Usuario>>();//permite autenticar usuarios
+builder.Services.AddScoped<UserManager<Usuario>>();
 builder.Services.AddTransient<IServiciosUsuarios, ServiciosUsuarios>();
 
 
@@ -64,6 +65,11 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+builder.Services.AddAuthorization(opciones =>
+{
+    opciones.AddPolicy("esadmin", politica => politica.RequireClaim("esadmin"));
+});
 var app = builder.Build();
 
 // 🌐 Middlewares

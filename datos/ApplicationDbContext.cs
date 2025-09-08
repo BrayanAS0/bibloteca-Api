@@ -1,10 +1,11 @@
 using biblotecaApi.Entidades;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using bibloteca_api.Entidades;
 
 namespace biblotecaApi.Datos;
 
-public class ApplicationDbContext : IdentityDbContext
+public class ApplicationDbContext : IdentityDbContext<Usuario>
 {
     public ApplicationDbContext(DbContextOptions options) : base(options)
     { }
