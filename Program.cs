@@ -1,9 +1,11 @@
 using bibloteca_api.Entidades;
 using bibloteca_api.Servicios;
+using bibloteca_api.Swagger;
 using biblotecaApi.Datos;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,13 +65,52 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-
+builder.Services.AddSwaggerGen(c =>
+{
+    c.OperationFilter<AuthorizeCheckOperationFilter>();
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Mi API",
+        Version = "v1"
+    });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Por favor, incluye el JWT con Bearer en el campo",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+    //c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    //{
+    //    {
+    //        new OpenApiSecurityScheme
+    //        {
+    //            Reference = new OpenApiReference
+    //            {
+    //                Type = ReferenceType.SecurityScheme,
+    //                Id = "Bearer"
+    //            }
+    //        },
+    //        new string[] {}
+    //    }
+    //});
+});
 builder.Services.AddAuthorization(opciones =>
 {
     opciones.AddPolicy("esadmin", politica => politica.RequireClaim("esadmin"));
 });
+
+
+
+///cors 
+///
+var allowHost = builder.Configuration.GetSection("AllowedHosts").Get<string[]>()!;
+
+builder.Services.AddCors(options => options.AddPolicy("AllowCors",
+    builder => builder.AllowAnyHeader().AllowAnyMethod().WithOrigins(allowHost)
+    ));
 var app = builder.Build();
 
 // 🌐 Middlewares
@@ -96,7 +137,7 @@ app.Use(async (context, next) =>
 });
 
 app.MapControllers();
-
+app.UseCors("allowCors");
 try
 {
     app.Run();
